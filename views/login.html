@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="outer">
+        <div class="inner">
+            <header class="head">
+                <h1>Login</h1>
+
+            </header>
+            <main class="signup-page">
+                <form action="/login/success" method="POST" id="login-form">
+
+                    <p>
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="your email" required>
+                    </p>
+                    <p>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="At least 8 charecter"
+                            required>
+                    </p>
+                    <p>
+
+                        <input type="submit" id="submit" value="Login">
+                    </p>
+                </form>
+            </main>
+            <footer class="foot">
+                <p>Don't have an account<a href="/">Sign Up</a></p>
+                <a href="/forget-password"><button>Forgot Password</button></a>
+            </footer>
+        </div>
+    </div>
+    <script src="login.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"
+        integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</body>
+
+</html>

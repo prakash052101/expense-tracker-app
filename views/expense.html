@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your Expenses</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="expense.css" />
+  </head>
+  <body>
+    <div id="msg"></div><hr>
+    <a id="back" href="/login">🔙</a>
+    <div>
+      <button id="rzp" class="rzp fgtBtn">Buy Premium</button>
+    </div>
+    <div>
+      <button id="leaderboard" class="fgttBtn"></button>
+    </div>
+    <div>
+      <button class="fgttBtn" onclick="download()" id="downloadexpense"></button>
+    </div>
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+
+    <div class="container">
+
+      <form id="my-form" action="/add-expense" method="POST">
+        <h2>Enter Expense Here 📒</h2>
+        <label for="amount" class="form-label">Enter Amount:</label>
+        <input type="number" name="amount" id="amount" class="form-control" required/>
+       
+        <label for="etype" class="form-control">Select Type:</label>
+        <select name="etype" id="etype" class="form-control">
+          <option value="default" selected>Choose Type</option>
+          <option value="fuel">Fuel</option>
+          <option value="food">Food</option>
+          <option value="movie">Movie</option>
+          <option value="emi">EMI</option>
+          <option value="utility">Utility</option>
+        </select>
+        <br />
+
+        <label for="date" class="">Date:</label>
+        <input type="date" name="date" id="date" class="">
+
+        <input id="btn" type="submit" value="Add Expense" class="adddata btn"/>
+      </form>
+      <ul id="details"><h3>Expenses:</h3></ul>
+      <ul id="boards"></ul>
+    <div id="pagination">
+      <div class="input-group mb-3">
+        <select class="form-select" id="dynamicpagination">
+            <option selected>Choose no Of expenses to show</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+    </div>
+    </div>
+    <div id="downloadlink" class="container">
+      <button class="btn" onclick="showDownloadLinks()" id="downloadshow">Download links</button>
+      <ul class="list-group" id="downloadlinks">
+          <h4 id="heading"></h4>
+      </ul>
+    </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="ex.js"></script>
+  </body>
+</html>

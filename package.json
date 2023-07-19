@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.369.0",
+    "@sendgrid/mail": "^7.7.0",
+    "aws-sdk": "^2.1414.0",
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.1",
+    "mysql2": "^3.5.1",
+    "nodemailer": "^6.9.3",
+    "nodemon": "^3.0.1",
+    "razorpay": "^2.9.0",
+    "sendinblue-api": "^1.0.8",
+    "sequelize": "^6.32.1",
+    "sib-api-v3-sdk": "^8.5.0",
+    "uuid": "^9.0.0"
+  }
+}
