@@ -1,36 +1,20 @@
-// 
 const path = require('path');
-const db = require('../database/db');
-const expense = require('../models/expense');
-const jwt = require('jsonwebtoken');
+const Expense = require('../models/expense.model');
 
 function getExpensePage(req, res) {
   res.sendFile(path.join(__dirname, '../views/expense.html'));
 }
 
-// async function fetchExpense(req, res) {
-//   try {
-    
-    
-//     const expenses = await expense.findAll({ where: { userId: req.user.id } });
-//   res.json(expenses);
-//   } catch (error) {
-//     console.error('Error retrieving expenses:', error);
-//     res.status(500).send('Internal server error');
-//   }
-// }
-
 async function fetchExpense(req, res) {
   try {
     let page = +req.query.page || 1;
     const pageSize = +req.query.pagesize || 5;
-    let totalexpense = await expense.count();
+    let totalexpense = await Expense.countDocuments({ userId: req.user._id });
     console.log(totalexpense);
-    let expenses = await expense.findAll({
-      where: { userId: req.user.id },
-      offset: (page - 1) * pageSize,
-      limit: pageSize,
-    });
+    let expenses = await Expense.find({ userId: req.user._id })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    
     res.status(201).json({
       expenses: expenses,
       currentPage: page,
@@ -42,8 +26,9 @@ async function fetchExpense(req, res) {
     });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ error: 'Failed to fetch expenses' });
   }
-};
+}
 
 module.exports = {
   getExpensePage,

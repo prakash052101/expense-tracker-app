@@ -1,35 +1,25 @@
-const path = require('path');
-const db = require('../database/db');
-const expense = require('../models/expense');
-const User = require('../models/user')
+const Expense = require('../models/expense.model');
+const User = require('../models/user.model');
 
 async function postExpense(req, res) {
   const { amount, etype, date } = req.body;
-  const t = await db.transaction();
   try {
+    const newExpense = new Expense({
+      amount: amount,
+      etype: etype,
+      date: date,
+      userId: req.user._id,
+    });
+    const result = await newExpense.save();
     
-    const result = await expense.create(
-      {
-        amount: amount,
-        etype:etype,
-        date:date,
-        userId: req.user.id,
-      },
-      { transaction: t }
-      );
-      const oldamount = req.user.totalamount;
-      const newamount = Number(oldamount) + Number(amount);
-      await User.update(
-        { totalamount: newamount },
-        { where: { id: req.user.id }, transaction: t }
-    );
-    await t.commit();
+    const oldamount = req.user.totalamount;
+    const newamount = Number(oldamount) + Number(amount);
+    await User.findByIdAndUpdate(req.user._id, { totalamount: newamount });
 
     res.status(201).json({ newexpense: result });
   } catch (error) {
-    await t.rollback();
     console.log(error);
-    
+    res.status(500).json({ error: 'Failed to create expense' });
   }
 }
 

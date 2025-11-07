@@ -1,26 +1,24 @@
-
-const path = require('path');
-const db = require('../database/db');
-const Expense = require('../models/expense');
-const User= require('../models/user');
-const {json}= require('sequelize');
+const Expense = require('../models/expense.model');
+const User = require('../models/user.model');
 
 async function deleteExpense(req, res) {
-  const t = await db.transaction();
   try {
     const expenseId = req.params.id;
-    const expenseObj = await Expense.findByPk(expenseId); 
-    const user = await User.findByPk(expenseObj.userId);
+    const expenseObj = await Expense.findById(expenseId);
+    
+    if (!expenseObj) {
+      return res.status(404).json({ error: 'Expense not found' });
+    }
+    
+    const user = await User.findById(expenseObj.userId);
     user.totalamount = Number(user.totalamount) - Number(expenseObj.amount);
-    await user.save({ transaction: t });
+    await user.save();
     
-    await Expense.destroy({ where: { id: expenseId }, transaction: t }); // Delete the expense from the database
-    await t.commit();
+    await Expense.findByIdAndDelete(expenseId);
     res.sendStatus(201);
-    
   } catch (err) {
-    await t.rollback();
     console.log(err);
+    res.status(500).json({ error: 'Failed to delete expense' });
   }
 }
 

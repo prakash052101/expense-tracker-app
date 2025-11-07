@@ -1,17 +1,10 @@
-const express =require ('express');
-
+require('dotenv').config();
+const express = require('express');
 const path = require('path');
-const bodyParser= require('body-parser');
-const db = require('./database/db');
-const User = require('./models/user');
-const expense = require('./models/expense');
-const Order = require('./models/order');
-const Forgotpassword = require('./models/forgetpassword');
-const FilesDownloaded = require('./models/filesdownloaded');
+const bodyParser = require('body-parser');
+const connectToMongo = require('./config/db');
 
-
-
-const app=express();
+const app = express();
 
 
 const postLoginRoute = require('./routes/postLoginRoute');
@@ -48,25 +41,16 @@ app.use(leaderboardRoute);
 app.use(getForgetPasswordRoute);
 app.use(postForgetPasswordRoute);
 app.use(getResetPasswordRoute);
-app.use(downloadfileRoute)
+app.use(downloadfileRoute);
 
-
-User.hasMany(expense);
-expense.belongsTo(User);
-
-User.hasMany(Order);
-Order.belongsTo(User);
-
-User.hasMany(Forgotpassword);
-Forgotpassword.belongsTo(User);
-
-User.hasMany(FilesDownloaded);
-FilesDownloaded.belongsTo(User);
-
-db.sync().then(()=>{
-    app.listen(4000,()=>console.log('server started at port 4000'));
-})
-.catch((err)=> console.error(err));
+// Connect to MongoDB and start server
+connectToMongo().then(() => {
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
+}).catch((err) => {
+    console.error('Failed to connect to MongoDB:', err);
+    process.exit(1);
+});
 
 
 
