@@ -6,9 +6,20 @@ const orderSchema = new mongoose.Schema({
   },
   orderid: {
     type: String,
+    required: true,
   },
   status: {
     type: String,
+    enum: ['pending', 'success', 'failed'],
+    default: 'pending',
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+  currency: {
+    type: String,
+    default: 'INR',
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

@@ -18,9 +18,26 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
   totalamount: {
     type: Number,
     default: 0,
+  },
+  preferences: {
+    currency: {
+      type: String,
+      default: 'USD',
+    },
+    timezone: {
+      type: String,
+      default: 'UTC',
+    },
+    monthlyBudget: {
+      type: Number,
+    }
   }
 }, { timestamps: true });
 

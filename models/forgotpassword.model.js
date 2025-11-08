@@ -15,6 +15,11 @@ const forgotPasswordSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+    index: { expires: 0 } // TTL index - MongoDB will auto-delete expired documents
   }
 }, { timestamps: true });
 

@@ -1,0 +1,2 @@
+# Custom hooks directory
+# Contains useAuth, useExpenses, useCategories, useDebounce hooks
