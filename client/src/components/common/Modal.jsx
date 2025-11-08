@@ -32,10 +32,11 @@ const Modal = ({
     document.addEventListener('keydown', handleEscape);
     document.body.style.overflow = 'hidden';
     
-    // Trap focus within modal
+    // Trap focus within modal (without auto-focusing first element)
+    // Only set up once when modal opens
     let cleanupFocusTrap;
     if (modalRef.current) {
-      cleanupFocusTrap = trapFocus(modalRef.current);
+      cleanupFocusTrap = trapFocus(modalRef.current, false);
     }
     
     return () => {
@@ -46,7 +47,8 @@ const Modal = ({
       // Restore focus when modal closes
       focusManagerRef.current.restoreFocus();
     };
-  }, [isOpen, closeOnEscape, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]); // Only re-run when isOpen changes
   
   if (!isOpen) return null;
   

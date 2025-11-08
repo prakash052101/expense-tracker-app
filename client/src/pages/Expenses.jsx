@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useExpense } from '../contexts/ExpenseContext';
 import { downloadExpensesCSV } from '../services/exportService';
 import ExpenseList from '../components/expenses/ExpenseList';
@@ -12,6 +13,7 @@ import Toast from '../components/common/Toast';
  * Main page for managing expenses with filtering, pagination, and CRUD operations
  */
 const Expenses = () => {
+  const { user } = useAuth();
   const {
     expenses,
     loading,
@@ -23,6 +25,8 @@ const Expenses = () => {
     deleteExpense,
     clearError,
   } = useExpense();
+
+  const currency = user?.preferences?.currency || 'USD';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -90,6 +94,7 @@ const Expenses = () => {
   };
 
   const handleSubmitExpense = async (expenseData) => {
+    console.log('Submitting expense:', expenseData);
     let result;
 
     if (selectedExpense) {
@@ -100,6 +105,8 @@ const Expenses = () => {
       result = await createExpense(expenseData);
     }
 
+    console.log('Expense submission result:', result);
+
     if (result.success) {
       showToast(
         selectedExpense ? 'Expense updated successfully' : 'Expense created successfully',
@@ -109,7 +116,9 @@ const Expenses = () => {
       setSelectedExpense(null);
       
       // Reload expenses to get updated data
-      loadExpenses();
+      console.log('Reloading expenses...');
+      await loadExpenses();
+      console.log('Expenses reloaded, count:', expenses.length);
     } else {
       throw new Error(result.error || 'Failed to save expense');
     }
@@ -253,6 +262,7 @@ const Expenses = () => {
         expenses={expenses}
         loading={loading}
         pagination={pagination}
+        currency={currency}
         onEdit={handleEditExpense}
         onDelete={handleDeleteExpense}
         onPageChange={handlePageChange}

@@ -30,9 +30,16 @@ const CategorySelect = ({
       setLoading(true);
       setFetchError(null);
       const response = await getCategories();
-      setCategories(response.data || []);
+      console.log('Categories fetched:', response);
+      
+      // Handle different response structures
+      const categoriesData = response.data || response.categories || response || [];
+      console.log('Categories data:', categoriesData);
+      
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (err) {
       console.error('Failed to fetch categories:', err);
+      console.error('Error details:', err.response?.data || err.message);
       setFetchError('Failed to load categories');
     } finally {
       setLoading(false);
@@ -70,22 +77,30 @@ const CategorySelect = ({
             : 'border-secondary-300 focus:border-primary-500 focus:ring-primary-500'
         } text-secondary-900 placeholder-secondary-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-secondary-50 disabled:cursor-not-allowed px-4 py-2.5`}
       >
-        {showUncategorized && (
-          <option value="">
-            {required ? 'Select a category' : 'Select a category (optional)'}
-          </option>
+        {loading ? (
+          <option value="">Loading categories...</option>
+        ) : fetchError ? (
+          <option value="">Error loading categories</option>
+        ) : (
+          <>
+            {showUncategorized && (
+              <option value="">
+                {required ? 'Select a category' : 'Select a category (optional)'}
+              </option>
+            )}
+            
+            {categories.length === 0 && !loading && !fetchError && (
+              <option value="">No categories available</option>
+            )}
+            
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.icon && `${category.icon} `}
+                {category.name}
+              </option>
+            ))}
+          </>
         )}
-        
-        {loading && <option value="">Loading categories...</option>}
-        
-        {!loading && fetchError && <option value="">Error loading categories</option>}
-        
-        {!loading && !fetchError && categories.map((category) => (
-          <option key={category._id} value={category._id}>
-            {category.icon && `${category.icon} `}
-            {category.name}
-          </option>
-        ))}
       </select>
 
       {error && (

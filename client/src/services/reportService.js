@@ -28,7 +28,18 @@ export const getDashboardData = async (filters = {}) => {
  * @returns {Promise} Response with monthly summary
  */
 export const getMonthlyReport = async (month) => {
-  const params = month ? { month } : {};
+  let params = {};
+  
+  if (month) {
+    // Parse YYYY-MM format to year and month
+    const [year, monthNum] = month.split('-');
+    // Convert month from 1-12 to 0-11 for the API
+    params = {
+      year: parseInt(year),
+      month: parseInt(monthNum) - 1
+    };
+  }
+  
   const response = await api.get('/reports/monthly', { params });
   return response.data;
 };

@@ -13,6 +13,7 @@ const ExpenseList = memo(({
   expenses = [], 
   loading = false, 
   pagination = {}, 
+  currency = 'USD',
   onEdit, 
   onDelete,
   onPageChange 
@@ -110,6 +111,7 @@ const ExpenseList = memo(({
                 <ExpenseItem
                   key={expense._id}
                   expense={expense}
+                  currency={currency}
                   onEdit={onEdit}
                   onDelete={handleDelete}
                   isDeleting={deletingId === expense._id}
@@ -138,7 +140,10 @@ const ExpenseList = memo(({
               </div>
               <div className="text-right">
                 <p className="font-bold text-lg text-secondary-900">
-                  ${expense.amount.toFixed(2)}
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: currency,
+                  }).format(expense.amount)}
                 </p>
               </div>
             </div>
@@ -324,6 +329,7 @@ ExpenseList.propTypes = {
     total: PropTypes.number,
     totalPages: PropTypes.number,
   }),
+  currency: PropTypes.string,
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onPageChange: PropTypes.func.isRequired,

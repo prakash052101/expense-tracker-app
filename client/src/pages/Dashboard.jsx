@@ -32,14 +32,18 @@ const Dashboard = () => {
   const monthlyBudget = user?.preferences?.monthlyBudget;
 
   const fetchDashboard = useCallback(async () => {
+    console.log('Fetching dashboard data with filters:', filters);
     setLoading(true);
     setError(null);
 
     try {
       const response = await getDashboardData(filters);
+      console.log('Dashboard API response:', response);
+      console.log('Dashboard data:', response.data);
       setDashboardData(response.data);
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
+      console.error('Error details:', err.response?.data || err.message);
       setError(err.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -115,12 +119,23 @@ const Dashboard = () => {
   }
 
   const {
+    kpis = {},
+    recentExpenses = [],
+    categoryDistribution = [],
+    budgetTracking = null,
+  } = dashboardData || {};
+
+  const {
     currentMonth = {},
     previousMonth = {},
     yearToDate = {},
-    recentExpenses = [],
-    categoryDistribution = [],
-  } = dashboardData || {};
+  } = kpis;
+
+  console.log('Dashboard render - dashboardData:', dashboardData);
+  console.log('Dashboard render - kpis:', kpis);
+  console.log('Dashboard render - currentMonth:', currentMonth);
+  console.log('Dashboard render - recentExpenses:', recentExpenses);
+  console.log('Dashboard render - categoryDistribution:', categoryDistribution);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">

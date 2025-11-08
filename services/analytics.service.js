@@ -112,9 +112,10 @@ async function calculateCategoryDistribution(userId, startDate = null, endDate =
     },
     {
       $project: {
-        categoryId: '$_id',
-        categoryName: { $ifNull: ['$categoryInfo.name', 'Uncategorized'] },
-        categoryColor: { $ifNull: ['$categoryInfo.color', '#6B7280'] },
+        _id: '$_id',
+        name: { $ifNull: ['$categoryInfo.name', 'Uncategorized'] },
+        color: { $ifNull: ['$categoryInfo.color', '#6B7280'] },
+        icon: { $ifNull: ['$categoryInfo.icon', '📌'] },
         total: 1,
         count: 1
       }
@@ -183,10 +184,21 @@ async function calculateBudgetTracking(userId, monthlyBudget) {
  * Get recent expenses
  * @param {String} userId - User ID
  * @param {Number} limit - Number of expenses to return (default: 7)
+ * @param {Date} startDate - Optional start date filter
+ * @param {Date} endDate - Optional end date filter
  * @returns {Array} - Array of recent expenses with category info
  */
-async function getRecentExpenses(userId, limit = 7) {
-  return await Expense.find({ userId })
+async function getRecentExpenses(userId, limit = 7, startDate = null, endDate = null) {
+  const query = { userId };
+  
+  // Add date filters if provided
+  if (startDate || endDate) {
+    query.date = {};
+    if (startDate) query.date.$gte = startDate;
+    if (endDate) query.date.$lte = endDate;
+  }
+  
+  return await Expense.find(query)
     .sort({ date: -1 })
     .limit(limit)
     .populate('category', 'name color icon')

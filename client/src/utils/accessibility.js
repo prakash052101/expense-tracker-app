@@ -6,10 +6,11 @@
 /**
  * Trap focus within a modal or dialog
  * @param {HTMLElement} element - The container element
+ * @param {boolean} autoFocus - Whether to auto-focus the first element
  */
-export const trapFocus = (element) => {
+export const trapFocus = (element, autoFocus = false) => {
   const focusableElements = element.querySelectorAll(
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
   );
   
   const firstFocusable = focusableElements[0];
@@ -35,8 +36,13 @@ export const trapFocus = (element) => {
 
   element.addEventListener('keydown', handleTabKey);
 
-  // Focus first element
-  firstFocusable?.focus();
+  // Only auto-focus if explicitly requested
+  if (autoFocus && firstFocusable) {
+    // Use setTimeout to avoid focus conflicts
+    setTimeout(() => {
+      firstFocusable.focus();
+    }, 100);
+  }
 
   // Return cleanup function
   return () => {

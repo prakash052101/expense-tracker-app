@@ -8,7 +8,7 @@ import CategoryBadge from '../categories/CategoryBadge';
  * Displays a single expense row in the expense list table
  * Memoized to prevent unnecessary re-renders
  */
-const ExpenseItem = memo(({ expense, onEdit, onDelete, isDeleting = false }) => {
+const ExpenseItem = memo(({ expense, currency = 'USD', onEdit, onDelete, isDeleting = false }) => {
   // Memoize formatted date to avoid recalculation on every render
   const formattedDate = useMemo(() => {
     const date = new Date(expense.date);
@@ -23,9 +23,9 @@ const ExpenseItem = memo(({ expense, onEdit, onDelete, isDeleting = false }) => 
   const formattedAmount = useMemo(() => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
     }).format(expense.amount);
-  }, [expense.amount]);
+  }, [expense.amount, currency]);
 
   return (
     <tr className="hover:bg-secondary-50 transition-colors">
@@ -148,6 +148,7 @@ ExpenseItem.propTypes = {
     }),
     receiptUrl: PropTypes.string,
   }).isRequired,
+  currency: PropTypes.string,
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   isDeleting: PropTypes.bool,

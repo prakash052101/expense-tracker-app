@@ -2,24 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const Toast = ({ 
+  show = true,
   message, 
   type = 'info', 
   duration = 3000, 
   onClose,
   position = 'top-right'
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(show);
   const [isExiting, setIsExiting] = useState(false);
   
   useEffect(() => {
-    if (duration > 0) {
+    setIsVisible(show);
+    if (show) {
+      setIsExiting(false);
+    }
+  }, [show]);
+  
+  useEffect(() => {
+    if (isVisible && duration > 0) {
       const timer = setTimeout(() => {
         handleClose();
       }, duration);
       
       return () => clearTimeout(timer);
     }
-  }, [duration]);
+  }, [isVisible, duration]);
   
   const handleClose = () => {
     setIsExiting(true);
@@ -85,7 +93,7 @@ const Toast = ({
   
   const toastContent = (
     <div 
-      className={`fixed ${positions[position]} z-50 transition-all duration-300 ease-in-out ${animations}`}
+      className={`fixed ${positions[position]} z-[9999] transition-all duration-300 ease-in-out ${animations}`}
       role="alert"
       aria-live="polite"
     >

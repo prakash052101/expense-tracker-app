@@ -25,7 +25,7 @@ const ExpenseChart = ({ data, currency = 'USD' }) => {
 
     return data.map((item, index) => ({
       name: item.category?.name || item.name || 'Uncategorized',
-      value: item.amount || item.value || 0,
+      value: item.total || item.amount || item.value || 0,
       color: item.category?.color || item.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
     }));
   }, [data]);

@@ -22,9 +22,9 @@ exports.getDashboard = async (req, res) => {
       success: true,
       data: {
         kpis: {
-          currentMonth: monthlyTotals.currentMonth,
-          previousMonth: monthlyTotals.previousMonth,
-          yearToDate: monthlyTotals.yearToDate
+          currentMonth: { total: monthlyTotals.currentMonth },
+          previousMonth: { total: monthlyTotals.previousMonth },
+          yearToDate: { total: monthlyTotals.yearToDate }
         },
         categoryDistribution,
         budgetTracking,
@@ -70,9 +70,24 @@ exports.getMonthly = async (req, res) => {
 
       const summary = await analyticsService.getMonthlySummary(userId, year, month);
 
+      // Get top expenses for the month
+      const monthStart = new Date(year, month, 1);
+      const monthEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
+      const topExpenses = await analyticsService.getRecentExpenses(userId, 10, monthStart, monthEnd);
+
       return res.status(200).json({
         success: true,
-        data: summary
+        data: {
+          month: {
+            year: summary.year,
+            month: summary.month,
+            monthName: summary.monthName,
+            total: summary.total,
+            count: summary.count
+          },
+          categoryBreakdown: summary.categoryBreakdown,
+          topExpenses
+        }
       });
     }
 
