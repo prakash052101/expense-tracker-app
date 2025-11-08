@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useExpense } from '../contexts/ExpenseContext';
 import { getDashboardData } from '../services/reportService';
 import { downloadExpensesCSV } from '../services/exportService';
 import KPICard from '../components/dashboard/KPICard';
@@ -10,6 +11,7 @@ import QuickAddFAB from '../components/dashboard/QuickAddFAB';
 import ExpenseModal from '../components/expenses/ExpenseModal';
 import Spinner from '../components/common/Spinner';
 import Button from '../components/common/Button';
+import Toast from '../components/common/Toast';
 
 /**
  * Dashboard Page
@@ -17,11 +19,13 @@ import Button from '../components/common/Button';
  */
 const Dashboard = () => {
   const { user } = useAuth();
+  const { createExpense } = useExpense();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
@@ -32,18 +36,14 @@ const Dashboard = () => {
   const monthlyBudget = user?.preferences?.monthlyBudget;
 
   const fetchDashboard = useCallback(async () => {
-    console.log('Fetching dashboard data with filters:', filters);
     setLoading(true);
     setError(null);
 
     try {
       const response = await getDashboardData(filters);
-      console.log('Dashboard API response:', response);
-      console.log('Dashboard data:', response.data);
       setDashboardData(response.data);
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
-      console.error('Error details:', err.response?.data || err.message);
       setError(err.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -93,6 +93,32 @@ const Dashboard = () => {
     }
   };
 
+  const handleSubmitExpense = async (expenseData) => {
+    try {
+      const result = await createExpense(expenseData);
+
+      if (result.success) {
+        showToast('Expense created successfully', 'success');
+        setIsExpenseModalOpen(false);
+        await fetchDashboard();
+      } else {
+        throw new Error(result.error || 'Failed to create expense');
+      }
+    } catch (error) {
+      console.error('Failed to submit expense:', error);
+      showToast(error.message || 'Failed to create expense', 'error');
+      throw error;
+    }
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+  };
+
+  const handleCloseToast = () => {
+    setToast({ show: false, message: '', type: 'success' });
+  };
+
   if (loading && !dashboardData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -130,12 +156,6 @@ const Dashboard = () => {
     previousMonth = {},
     yearToDate = {},
   } = kpis;
-
-  console.log('Dashboard render - dashboardData:', dashboardData);
-  console.log('Dashboard render - kpis:', kpis);
-  console.log('Dashboard render - currentMonth:', currentMonth);
-  console.log('Dashboard render - recentExpenses:', recentExpenses);
-  console.log('Dashboard render - categoryDistribution:', categoryDistribution);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
@@ -289,12 +309,15 @@ const Dashboard = () => {
       <ExpenseModal
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
-        onSubmit={(expenseData) => {
-          // This will be implemented in task 21
-          console.log('Expense submitted:', expenseData);
-          setIsExpenseModalOpen(false);
-          fetchDashboard(); // Refresh dashboard after adding expense
-        }}
+        onSubmit={handleSubmitExpense}
+      />
+
+      {/* Toast Notifications */}
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={handleCloseToast}
       />
     </div>
   );

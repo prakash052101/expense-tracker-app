@@ -94,18 +94,13 @@ const Expenses = () => {
   };
 
   const handleSubmitExpense = async (expenseData) => {
-    console.log('Submitting expense:', expenseData);
     let result;
 
     if (selectedExpense) {
-      // Update existing expense
       result = await updateExpense(selectedExpense._id, expenseData);
     } else {
-      // Create new expense
       result = await createExpense(expenseData);
     }
-
-    console.log('Expense submission result:', result);
 
     if (result.success) {
       showToast(
@@ -114,11 +109,7 @@ const Expenses = () => {
       );
       setIsModalOpen(false);
       setSelectedExpense(null);
-      
-      // Reload expenses to get updated data
-      console.log('Reloading expenses...');
       await loadExpenses();
-      console.log('Expenses reloaded, count:', expenses.length);
     } else {
       throw new Error(result.error || 'Failed to save expense');
     }
